@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as restify from 'restify';
 import { config } from 'dotenv';
 import { BotFrameworkAdapter } from 'botbuilder';
-import run from './bots/llmBot';
+import MyBot from './bots/bot';
 
 // Import cấu hình môi trường
 const ENV_FILE = path.join(__dirname, '..', '.env');
@@ -24,17 +24,15 @@ adapter.onTurnError = async (context, error) => {
     await context.sendActivity('Xin lỗi, bot đã gặp lỗi.');
 };
 
+const bot = new MyBot();
+
 // Lắng nghe các tin nhắn đến
 server.post('/api/messages', async (req, res) => {
     console.log('Received message:', req.body);
-    await adapter.processActivity(req, res, async (context) => {
-        if (context.activity.type === 'message') {
-            const userMessage = context.activity.text;
-            const botResponse = await run(userMessage);
-            await context.sendActivity(botResponse);
-        }
+    await adapter.processActivity(req, res, async (turnContext) => {
+        await bot.onTurn(turnContext);
     });
-});
+})
 
 // Khởi động server
 const port = process.env.PORT || 3978;
