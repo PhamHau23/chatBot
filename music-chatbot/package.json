@@ -44,7 +44,9 @@
         "botbuilder-ai": "~4.22.1",
         "botbuilder-dialogs": "~4.22.1",
         "botbuilder-testing": "~4.22.1",
+        "cors": "^2.8.5",
         "dotenv": "^8.6.0",
+        "express": "^5.1.0",
         "file-system": "^2.2.2",
         "fs": "^0.0.1-security",
         "mime-types": "^3.0.1",
@@ -53,6 +55,8 @@
         "restify": "~11.1.0"
     },
     "devDependencies": {
+        "@types/cors": "^2.8.17",
+        "@types/express": "^5.0.1",
         "@types/mime-types": "^2.1.4",
         "@types/mocha": "^7.0.2",
         "@types/restify": "8.4.2",
