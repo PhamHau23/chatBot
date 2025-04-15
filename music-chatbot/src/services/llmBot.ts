@@ -1,33 +1,32 @@
-// gemini-integration.js
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import "dotenv/config";
 
-const apiKey = `${process.env.GEMINI_API_KEY}`
-const genAI = new GoogleGenerativeAI(apiKey)
+const apiKey = `${process.env.GEMINI_API_KEY}`;
+const genAI = new GoogleGenerativeAI(apiKey);
 const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash-thinking-exp-01-21",
+    model: "gemini-1.5-pro", // Hoặc model bạn đang dùng
 });
+
 const generationConfig = {
     temperature: 0.7,
     topP: 0.95,
     topK: 64,
-    maxOutputTokens: 65536,
-}
+    maxOutputTokens: 2048, // Nên giảm xuống một chút cho an toàn
+};
 
-async function run(message: string, history: any[] = []): Promise<string> { // Nhận thêm tham số history
+async function run(message: string, history: any[] = []): Promise<string> {
     console.log("API Key:", apiKey ? "Đã được cấu hình" : "Chưa được cấu hình!")
-    console.log("Bot đang bắt đầu trả lời...");
+    console.log("Bot đang bắt đầu trả lời...")
 
     const chatSession = model.startChat({
         generationConfig,
-        history: history, // Sử dụng lịch sử được truyền vào
-    });
+        history,
+    })
 
-    const result = await chatSession.sendMessageStream(`Bạn là một chatbot về âm nhạc. Chỉ cần trả lời bằng tiếng việt, hãy đưa
-        thông tin về ${message}, chỉ trả lời chi tiết nếu có yêu cầu.`)
+    const result = await chatSession.sendMessageStream(`Bạn là 1 chatbot âm nhạc, hãy trả lời thông tin của
+        câu hỏi sau nếu nó liên quan đến âm nhạc và trả lời bằng tiếng việt. Câu hỏi, thông tin: ${message}`)
 
     let accumulatedText = ""
-
     process.stdout.write("Phản hồi từ Bot: ")
     for await (const chunk of result.stream) {
         try {
@@ -39,11 +38,8 @@ async function run(message: string, history: any[] = []): Promise<string> { // N
         }
     }
 
-    console.log("\nBot đã trả lời xong")
-
-    // Bạn có thể muốn trả về cả accumulatedText và history đã được cập nhật từ chatSession
-    // để bot.js có thể lưu lại.
-    return accumulatedText;
+    console.log("\nBot đã trả lời xong", accumulatedText)
+    return accumulatedText
 }
 
-export default run;
+export default run
