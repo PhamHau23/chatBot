@@ -26,20 +26,10 @@ async function run(message: string, history: any[] = []): Promise<string> {
     const result = await chatSession.sendMessageStream(`Bạn là 1 chatbot âm nhạc, hãy trả lời thông tin của
         câu hỏi sau nếu nó liên quan đến âm nhạc và trả lời bằng tiếng việt. Câu hỏi, thông tin: ${message}`)
 
-    let accumulatedText = ""
     process.stdout.write("Phản hồi từ Bot: ")
-    for await (const chunk of result.stream) {
-        try {
-            const chunkText = chunk.text()
-            process.stdout.write(chunkText)
-            accumulatedText += chunkText
-        } catch (error) {
-            console.error("\nLỗi khi xử lý chunk:", error)
-        }
-    }
+    const response = await result.response
 
-    console.log("\nBot đã trả lời xong", accumulatedText)
-    return accumulatedText
+    return response.text()
 }
 
 export default run
